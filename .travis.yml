@@ -2,6 +2,10 @@ language: go
 go:
 - '1.9'
 gobuild_args: -x -ldflags "-X main.GitCommit=$TRAVIS_COMMIT"
+addons:
+  apt:
+    packages:
+    - unzip
 before_install:
 - go get -u github.com/labstack/echo/...
 jobs:
@@ -12,13 +16,20 @@ jobs:
     script: GOOS=linux go build -ldflags "-X main.GitCommit=$TRAVIS_COMMIT" -o server-linux
   - name: Build binary for macOs
     script: GOOS=darwin go build -ldflags "-X main.GitCommit=$TRAVIS_COMMIT" -o server-macos
+  - stage: ami
+    name: Create AWS AMI with packer
+    script: "./packer.sh"
 deploy:
   provider: releases
   api_key:
     secure: cWv966YogqUK4YF0/KgnH3I42cQG481R6cPXnZHTiGop7x/tSW4CTGRqA+hkypVgtPGKqc8MHPcx2BDWSz46fmdCBZI2cg49YL02clQOVUDmtSUJmRoHOf9t+UE6tLUpXykbBVMEdgIAFI8XADz1YHIxPZG9rykYf/2r3tULsUX0Mwyr8pR05FdP9IsbknCrEylVZr6iCeGD9pCG4TqY/3yNGBvAFkJ1LxmDCc5CYcP7oNKsLuNTzSaxdzMlGYwdZ5C3FvxqSllmECLFd2Flp51ogB6lN86TYAcTAFVz8UUY8ZS8yJ6EU3mrJT7wz9O4qE8LO86HYX639Py/EmKqls20a0Vj5mF1gzzGLRheUNb6fiWdT2BaWst6Dp4waHaGxu56WspI1eGXlpUDSdRjVKBr1K/RN4pT0AhIc6KMFANocO5Pj+P2sarFWTfE0pLswIELjnDjytDkL5W5XAHeOnzEtksHEp1eBlrJmoyYda6rW5cf9dskodIYZRtxx03vL8Sxdrd1C3aRz3aE+pzTNhkzxu2chti2jKmvWFvuOqTw/roEgynoxXVZNP5msfHexDPHxCmIA5pLuUOhsyMdYX9q3TXYMXUMRSdof+qB+ltkPPpw0ZyAKbGbIdQuoGzyPMyZ6BSuU7jttRPtNOVEqozOoZJBvBU8+ZqP/xCPezQ=
   file:
-    - "server-linux"
-    - "server-macos"
+  - server-linux
+  - server-macos
   skip_cleanup: true
   on:
     tags: true
+env:
+  global:
+  - secure: U8yX4CK4R/7of+Q9d+1pcsu2ijcSK1MVfZRIgfaRWkzJtURi3sC5dIRfc/7Yn/XZqlXJkW4L2XWo0cAiR906Oe8HxeJngtf3jqT4SzaJS8ddryGU0V1gBmwIuj4I3+vSUL/dd1rbHHZ91zegr+fwD3qpK9CzghzEhlAiqa/HIqt1z1BNm75kG34ijeFegWwO3fn9mVmo8qJ1MMX0TgDDs56SMoxQoFyuEyoVmT0AmKww5hh7FN2THjnlbIOP1QUiUjDYmx0GE4/Q+h7w1f731EpTxAJdccl8TrwG7PvQMbIbErV+lQypEVv9KBcGuq280MlpuxHGSLVz/V3Y2yv8HXj0rXOiVYp4AFI23N7pMUONfGH4Ol7+sSJKvgH2OI55JJZtFODHIeSaG16QDvCJpRKp9z1wNS4Goj+ks0QkdQh+/icT04MjD5rt80WjIt6ANp4PNAIXwtq7adiCG9bigD6zf/Es2a2xzPM7UjDk92OTFSEyuAT5Sc6US2lzVbuHOS3qPCe6EDbaYZocoAT49nvF11V7kO0OLrHM7QRe7gUj4DIQqY4MKMBSWwGTSeGspDXA/RrATltGneFBgiofjJDkC08JpjRN6aOesrh7RgFPMqMlr7ZcSZyEoKF6XuW6I/smyq6VGgprF0UFyp7FbngKVKCmoiYQ9AUn2ac2e4M=
+  - secure: J6Kz030AT0AOyfHJyLzqVvucYV+cTggcbuG1V15Ao/kw0Ol2zFvUaRJPhQbZk0XuTJFMXhtU1HNEKKXi1QwZozErPmblL/595tfbOQLDx9wHHhpxfcvbhpagHObnE8AWt3rjXhloCCY7T29vZA7tTR9qAvmPFybvkFNVgqsI2lu1cRF+ayZpj6NYPljZbehiKqGJ43s8mXgv1YeXG8D272R1Am+srzlhfVkD/XwJlMsYnkCxECp85Q2zeV7o9rKPMUpekxnCfNGECOA5pFnMPULnyLiQU5mu2s7Le7i4dIpZ1e4+72FJoi0j74CTk6+LONaCNmyvZAr1Ll7vIBDRWfIIiPL1WlY9O/LD6cCglsBQsxAZHp56KC13lysWb4TCO5VZ7NNOaRrTpbJlmCZECAZEvam/k9j0ttv5J38jXQcArR2A3Z8yyQOpWMvyJhIMmuWrKyVgQ3x9vJVG82vRzrKPQHX0UHx/Zy76klzfAF+b2tWB26PZhXG3wQsFD0RnzbOjS9v25hEcie1VAvkeDxAu1jZgCjZbAeHB76LcK90t8G2jRAJAJLL6XQxwEcHOk1l+pBdUhpHwUt/awp8M6rxu6HPyrfl0GeRFXzzDJ4EEfGPZoQv11qrk2doFZdXssC9/2qoWWgzZorrqXYZ5g4IVfOZDsbCTFoDrLPxCu3k=

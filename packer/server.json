@@ -1,0 +1,41 @@
+{
+    "variables": {
+        "aws_access_key": "",
+        "aws_secret_key": "",
+        "ansible-playbook": "",
+        "region": "eu-west-1"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "region": "{{user `region`}}",
+            "instance_type": "t2.micro",
+            "ssh_username": "alpine",
+            "source_ami": "ami-66de501f",
+            "ami_name": "goserver-{{isotime \"2006-01-02-15.04.05\"}}",
+            "associate_public_ip_address": true,
+            "access_key": "{{user `aws_access_key`}}",
+            "secret_key": "{{user `aws_secret_key`}}",
+            "tags": {
+                "version": "amzn2",
+                "Name": "goserver-{{isotime \"2006-01-02-15.04.05\"}}",
+                "Description": "Alpine linux test"
+            }
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "server-linux",
+            "destination": "/tmp/server"
+        },
+        {
+            "type": "shell",
+            "inline": [
+              "sudo mv /tmp/server /bin/server",
+              "sudo chmod a+x /bin/server",
+              "sudo rm /var/lib/cloud/.bootstrap-complete"
+            ]
+          }
+    ]
+}
