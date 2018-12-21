@@ -1,0 +1,6 @@
+  language: go
+  go:
+    - "1.9"
+  gobuild_args: -x -ldflags "-X main.GitCommit=$TRAVIS_COMMIT"
+  before_install:
+  - go get -u github.com/labstack/echo/...
