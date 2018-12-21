@@ -4,3 +4,10 @@
   gobuild_args: -x -ldflags "-X main.GitCommit=$TRAVIS_COMMIT"
   before_install:
   - go get -u github.com/labstack/echo/...
+  jobs:
+    include:
+      - stage: build
+        name: "Build binary for linux"
+        script: GOOS=linux go build -ldflags "-X main.GitCommit=`git rev-parse --short HEAD`"
+      - name: "Build binary for macOs"
+        script: GOOS=darwin go build -ldflags "-X main.GitCommit=`git rev-parse --short HEAD`"
