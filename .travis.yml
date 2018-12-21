@@ -10,10 +10,8 @@ jobs:
   - stage: build
     name: Build binary for linux
     script: GOOS=linux go build -ldflags "-X main.GitCommit=$TRAVIS_COMMIT" -o server-linux
-      HEAD`"
   - name: Build binary for macOs
     script: GOOS=darwin go build -ldflags "-X main.GitCommit=$TRAVIS_COMMIT" -o server-macos
-      HEAD`"
 deploy:
   provider: releases
   api_key:
