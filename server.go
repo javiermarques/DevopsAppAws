@@ -7,7 +7,7 @@ import (
 )
 
 // Version application number
-const Version = "0.1"
+const Version = "1"
 
 // GitCommit hash linked var in build time
 var GitCommit string
@@ -24,6 +24,5 @@ func helloWorld(c echo.Context) error {
 }
 
 func version(c echo.Context) error {
-
 	return c.HTML(http.StatusOK, "Version: "+Version+"</br>Hash: "+GitCommit)
 }
