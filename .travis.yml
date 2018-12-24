@@ -19,6 +19,9 @@ jobs:
   - stage: ami
     name: Create AWS AMI with packer
     script: "./packer.sh"
+  - stage: infra
+    name: Apply infra changes
+    script: "./terraform.sh"
 deploy:
   provider: releases
   api_key:
