@@ -15,3 +15,5 @@ For the application the infra chosen was using and AutoScaling Group, which lets
 
 For creating the infra, `terraform plan` first to check the changes that are going to be applied and the `terraform apply`
 Terraform recipe already looks up for the newest Amazon image available, so building a new one will attach the new image to the ASG
+
+There is a healthcheck bash script, just run it without arguments and will output if server is returning 200 http code or not
